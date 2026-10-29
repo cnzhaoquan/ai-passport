@@ -135,6 +135,20 @@ bool life_view_create(void) {
     return ok;
 }
 
+void life_view_destroy(void) {
+    if (s_toast_timer) {
+        lv_timer_delete(s_toast_timer);
+        s_toast_timer = NULL;
+    }
+    if (s_screen) {
+        lv_obj_delete(s_screen);   // also deletes the canvas that points at s_pixels
+        s_screen = NULL;
+    }
+    heap_caps_free(s_pixels);
+    s_pixels = NULL;
+    s_canvas = NULL;
+}
+
 void life_view_render(const life_t *life) {
     if (s_pixels) {
         bool dirty = false;

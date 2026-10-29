@@ -35,6 +35,8 @@ run_static_checks() {
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_life.c main/life.c -o "${test_dir}/test_life"
     "${test_dir}/test_life"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain         tests/test_ca1d.c main/ca1d.c main/kaleido.c main/pixmap.c -lm         -o "${test_dir}/test_ca1d"
+    "${test_dir}/test_ca1d"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_key_guard.c -o "${test_dir}/test_key_guard"
     "${test_dir}/test_key_guard"

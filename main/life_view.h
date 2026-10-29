@@ -10,6 +10,10 @@
 // allocated; an error message is shown on screen in that case.
 bool life_view_create(void);
 
+// Stop the toast timer, delete the screen and free the canvas. The screen
+// must not be the active one. Safe after a failed create.
+void life_view_destroy(void);
+
 // Repaint cells whose color changed since the last call and refresh counters.
 void life_view_render(const life_t *life);
 
