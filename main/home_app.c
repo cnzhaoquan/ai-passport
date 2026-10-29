@@ -19,6 +19,7 @@
 #define CARD_STEP    78
 #define THUMB        60
 #define THUMB_CELLS  30                      // 2 px cells for Life and the rule
+#define THUMB_RADIUS 11
 #define FRAME_MS     100
 #define LVGL_LOCK_MS 500
 
@@ -54,11 +55,18 @@ static pix_waterfall_t s_wf;
 static uint16_t s_life_colors[LIFE_COLOR_LEVELS];
 static uint16_t s_bg;
 
+#define CARD_BG      0x0B111C
+#define CARD_BG_ON   0x111A2B
+
+static uint16_t card_bg(int i) {
+    return pix_rgb565(i == s_selected ? CARD_BG_ON : CARD_BG);
+}
+
 static void style_cards(void) {
     for (int i = 0; i < CARD_COUNT; i++) {
         const bool on = i == s_selected;
         lv_obj_set_style_border_color(s_cards[i], lv_color_hex(on ? CARDS[i].accent : 0x1A2233), 0);
-        lv_obj_set_style_bg_color(s_cards[i], lv_color_hex(on ? 0x111A2B : 0x0B111C), 0);
+        lv_obj_set_style_bg_color(s_cards[i], lv_color_hex(on ? CARD_BG_ON : CARD_BG), 0);
     }
 }
 
@@ -70,7 +78,6 @@ static lv_obj_t *make_card(int i) {
     lv_obj_set_style_radius(card, 16, 0);
     lv_obj_set_style_bg_opa(card, LV_OPA_COVER, 0);
     lv_obj_set_style_border_width(card, 2, 0);
-    lv_obj_set_style_clip_corner(card, true, 0);
     lv_obj_remove_flag(card, LV_OBJ_FLAG_SCROLLABLE);
 
     lv_obj_t *name = ui_label(card, &lv_font_montserrat_20, UI_TEXT);
@@ -141,8 +148,6 @@ static bool home_enter(void) {
         s_thumbs[i] = lv_canvas_create(s_cards[i]);
         lv_canvas_set_buffer(s_thumbs[i], s_thumb_px[i], THUMB, THUMB, LV_COLOR_FORMAT_RGB565);
         lv_obj_set_pos(s_thumbs[i], 4, 4);
-        lv_obj_set_style_radius(s_thumbs[i], 11, 0);
-        lv_obj_set_style_clip_corner(s_thumbs[i], true, 0);
     }
     style_cards();
 
@@ -203,7 +208,9 @@ static uint32_t home_tick(void) {
     }
     if (s_thumb_px[2]) draw_kaleido();
     for (int i = 0; i < CARD_COUNT; i++) {
-        if (s_thumbs[i]) lv_obj_invalidate(s_thumbs[i]);
+        if (!s_thumbs[i]) continue;
+        pix_round_corners(s_thumb_px[i], THUMB, THUMB, THUMB, THUMB_RADIUS, card_bg(i));
+        lv_obj_invalidate(s_thumbs[i]);
     }
     bsp_lvgl_unlock();
     return FRAME_MS;

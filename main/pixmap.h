@@ -15,6 +15,10 @@ uint32_t pix_mix(uint32_t a, uint32_t b, int t);
 void pix_gradient(uint16_t *out, int n, const uint32_t *anchors, int count);
 
 void pix_fill_rect(uint16_t *px, int stride, int x, int y, int w, int h, uint16_t color);
+// Paint the pixels outside rounded corners of radius r with color. Cheaper than
+// LVGL's clip_corner, which renders through an off-screen layer that the 24 KB
+// LVGL heap cannot hold.
+void pix_round_corners(uint16_t *px, int stride, int w, int h, int r, uint16_t color);
 
 // A canvas filled top to bottom with rows of square cells; once full, every new
 // row scrolls the picture up by one cell.

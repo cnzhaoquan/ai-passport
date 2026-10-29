@@ -35,6 +35,20 @@ void pix_fill_rect(uint16_t *px, int stride, int x, int y, int w, int h, uint16_
     }
 }
 
+void pix_round_corners(uint16_t *px, int stride, int w, int h, int r, uint16_t color) {
+    for (int y = 0; y < r; y++) {
+        for (int x = 0; x < r; x++) {
+            // Pixel centre relative to the corner circle's centre.
+            const int dx = 2 * (r - x) - 1, dy = 2 * (r - y) - 1;
+            if (dx * dx + dy * dy <= 4 * r * r) continue;
+            px[y * stride + x] = color;
+            px[y * stride + (w - 1 - x)] = color;
+            px[(h - 1 - y) * stride + x] = color;
+            px[(h - 1 - y) * stride + (w - 1 - x)] = color;
+        }
+    }
+}
+
 void pix_waterfall_init(pix_waterfall_t *wf, uint16_t *px, int stride, int cols, int rows, int cell) {
     wf->px = px;
     wf->stride = stride;

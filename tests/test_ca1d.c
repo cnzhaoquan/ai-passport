@@ -206,6 +206,18 @@ static void test_pixmap(void) {
         assert(px[(4 + line) * 10 + 0] == 9 && px[(4 + line) * 10 + 7] == 9);
     }
     assert(px[8] == 0 && px[9] == 0);   // the area beside the cells is untouched
+
+    // Rounded corners: only pixels outside the arc change, symmetrically.
+    static uint16_t sq[12 * 12];
+    for (int i = 0; i < 12 * 12; i++) sq[i] = 1;
+    pix_round_corners(sq, 12, 12, 12, 4, 5);
+    assert(sq[0] == 5 && sq[11] == 5 && sq[11 * 12] == 5 && sq[12 * 12 - 1] == 5);
+    assert(sq[1] == 5 && sq[12] == 5);                  // still outside the arc
+    assert(sq[3] == 1 && sq[3 * 12] == 1);              // on the edge past the curve
+    assert(sq[6 * 12 + 6] == 1 && sq[4] == 1);          // interior and straight edge
+    int changed = 0;
+    for (int i = 0; i < 12 * 12; i++) changed += sq[i] == 5;
+    assert(changed % 4 == 0 && changed > 4 && changed < 4 * 16);
 }
 
 static int abs_diff(int a, int b) {

@@ -29,6 +29,7 @@ static const char *TAG = "shell";
 
 #define INPUT_QUEUE_DEPTH  8
 #define BATTERY_PERIOD_MS  15000
+#define BATTERY_FIRST_MS   3000           // the gauge's first reading can be provisional
 #define LVGL_LOCK_MS       1000
 
 typedef struct {
@@ -98,7 +99,7 @@ static TickType_t ticks_until(TickType_t deadline, TickType_t now) {
 static void shell_task(void *arg) {
     (void)arg;
     switch_to(&APP_HOME);
-    TickType_t next_battery = xTaskGetTickCount() + pdMS_TO_TICKS(BATTERY_PERIOD_MS);
+    TickType_t next_battery = xTaskGetTickCount() + pdMS_TO_TICKS(BATTERY_FIRST_MS);
 
     for (;;) {
         TickType_t now = xTaskGetTickCount();
